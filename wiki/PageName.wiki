@@ -1,0 +1,13 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Hi, every this a opensource project. I havn't anything like this. So, it may comes with confusion. 
+
+
+= Details =
+
+You will get such resource and information:
+  * Text in *bold* or _italic_ Um... I'll reserve this line for reminding me.
+  * *Develop schedule* You will be aware of what's going on.
+  * *Source code package* You can compile and test this software.
