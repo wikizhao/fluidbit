@@ -23,7 +23,7 @@
 *   Check syntax correctness of the command 
 *
 ********************************************/
-static int bp_cmd_check(int paranum, char **para)
+int bp_cmd_check(int paranum, char **para)
 {
     int res = BP_OK;
     int i = 0;
@@ -52,23 +52,97 @@ static int bp_cmd_check(int paranum, char **para)
 *   Forward the command for next operation
 *
 ********************************************/
-static int bp_cmd_forward(int paranum, char **para)
+int bp_cmd_forward(int paranum, char **para)
 {
     int res = BP_OK;
+    bp_cmd_assign_st assignpara;    /* Set zero when used */
+    bp_cmd_list_st listpara;        /* Set zero when used */
 
 
     /* Commands will be forwarded according to the second parameter */
     /* HELP */
-    if (0 == strcmp(para[2], BP_CMD_HELP) || 0 == strcmp(para[2], BP_CMD_HELP_SHORT))
+    if (0 == strcmp(para[1], BP_CMD_HELP) || 0 == strcmp(para[1], BP_CMD_HELP_SHORT))
     {
-        /*  */
+        /* Check syntax correctness */
+        if (paranum > 2)
+        {
+            return BP_ERR_PARA;
+        }
+
+        /* Show help information */
+        res = bp_cmd_help();
 
         return res;
     }
     /* CHECK */
-    if (0 == strcmp(para[2], BP_CMD_CHECK) || 0 == strcmp(para[2], BP_CMD_CHECK_SHORT))
+    if (0 == strcmp(para[1], BP_CMD_CHECK) || 0 == strcmp(para[1], BP_CMD_CHECK_SHORT))
     {
-        /*  */
+        /* Check syntax correctness */
+        if (paranum > 2)
+        {
+            return BP_ERR_PARA;
+        }
+
+        /* Check the environment */
+        printf("This is environment information.\n");
+
+        return res;
+    }
+    /* LIST */
+    if (0 == strcmp(para[1], BP_CMD_LIST) || 0 == strcmp(para[1], BP_CMD_LIST_SHORT))
+    {
+        /* Check syntax correctness */
+        if (paranum > 3)
+        {
+            return BP_ERR_PARA;
+        }
+
+        /* Set zero */
+        memset(&listpara, 0, sizeof(listpara));
+
+        /* Copy domain name */
+        if (2 != paranum)
+        {
+            memcpy(listpara.domain_name, para[2], strlen(para[2]));
+        }
+
+        /* Forward command */
+        res = bp_list(listpara);
+        
+        return res;
+    }
+    /* ASSIGN */
+    if (0 == strcmp(para[1], BP_CMD_ASSIGN) || 0 == strcmp(para[1], BP_CMD_ASSIGN_SHORT))
+    {
+        /* Check syntax correctness */
+        if (paranum != 4)
+        {
+            return BP_ERR_PARA;
+        }
+
+        /* Copy domain name and bandwidth */
+        memcpy(assignpara.domain_name, para[2], strlen(para[2]));
+        memcpy(assignpara.bandwidth, para[3], strlen(para[3]));
+
+        /* Forward command */
+        res = bp_assign(assignpara);
+
+        return res;
+
+    }
+    /* STATUS */
+    if (0 == strcmp(para[1], BP_CMD_STATUS) || 0 == strcmp(para[1], BP_CMD_STATUS_SHORT))
+    {
+        /* Check syntax correctness */
+        if (paranum != 2)
+        {
+            return BP_ERR_PARA;
+        }
+
+        /* Forward command */
+        res = bp_status();
+
+        return res;
     }
     
     
@@ -78,23 +152,27 @@ static int bp_cmd_forward(int paranum, char **para)
 /*******************************************
 *   Function:bp_cmd_help
 *   Description:
-*   Forward the command for next operation
+*   Show help information
 *
 ********************************************/
 static int bp_cmd_help(void)
 {
     printf("Useage:\n");
     
-    printf("bpool check\n");
-    printf("\t\tCheck bandwidth pool environment.\n");
+    printf("\n\tbpool check\n");
 
-    printf("bpool list [domain name]\n");
-    printf("\t\tCheck bandwidth pool environment.\n");
-    printf("\t\t\tdomain number: The name of domain you want to list. If domain\
-        name not specified, all the domains will be listed.\n");
+    printf("\n\tbpool list [domain name]\n");
+
+    printf("\n\tbpool assign {domain name} {bandwidth}\n");
+
+    printf("\n\tbpool status\n");
+
+    printf("\n\tbpool help\n");
+
+    printf("\n");
     
-    printf("bpool check\n");
-    printf("\t\tCheck bandwidth pool environment.\n");
+    return BP_OK;
+    
 }
 
 
